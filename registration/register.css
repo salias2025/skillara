@@ -1,0 +1,199 @@
+/* =============================
+   RESET & GLOBAL STYLES
+============================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #7B3FE4, #DE005E);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* =============================
+   REGISTER SECTION
+============================= */
+.register-section {
+  width: 90%;              /* don't touch screen edges */
+  max-width: 480px;
+  padding: 40px 30px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  margin: 0 auto;          /* center horizontally */
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.register-container h2 {
+  font-size: 32px;
+  text-align: center;
+  color: #7B3FE4;
+  margin-bottom: 30px;
+}
+
+/* =============================
+   USER TYPE SELECTION
+============================= */
+.user-type-selection {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  flex-wrap: wrap;          /* wrap on small screens */
+  margin-bottom: 25px;
+}
+
+.user-type-selection label {
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-type-selection input {
+  cursor: pointer;
+}
+
+/* =============================
+   FORM INPUTS
+============================= */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus {
+  border-color: #7B3FE4;
+  box-shadow: 0 0 10px rgba(123,63,228,0.3);
+  outline: none;
+}
+
+/* =============================
+   SERVICE PROVIDER FIELDS
+============================= */
+#providerFields {
+  display: block;          /* keep display block for transition */
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+#providerFields.show {
+  opacity: 1;
+  max-height: 500px;
+  margin-bottom: 15px;
+}
+
+/* =============================
+   SUBMIT BUTTON
+============================= */
+button[type="submit"] {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #7B3FE4, #DE005E);
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* =============================
+   LOGIN LINK
+============================= */
+.login-link {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.login-link a {
+  color: #7B3FE4;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+  color: #DE005E;
+}
+
+/* =============================
+   RESPONSIVE STYLES
+============================= */
+@media (max-width: 500px) {
+  .register-section {
+    width: 95%;
+    padding: 30px 20px;
+  }
+
+  .register-container h2 {
+    font-size: 28px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"] {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+
+  button[type="submit"] {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .user-type-selection {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .register-container h2 {
+    font-size: 24px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"] {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  button[type="submit"] {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .user-type-selection {
+    flex-direction: column;
+    align-items: center;
+  }
+}

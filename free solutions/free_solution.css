@@ -1,0 +1,473 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: #efefef;
+    min-height: 100vh;
+}
+
+header {
+    background: #7d2ae8;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between; /* This pushes logo left and search right */
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin: 20px;
+    margin-bottom: 0;
+}
+
+.logo-name {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#logo svg {
+    height: 70px;
+    width: auto;
+}
+
+#websiteName {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #5335cf, #de005e, #f66e48, #de005e, #5335cf);
+    background-size: 400% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animate 8s linear infinite;
+}
+
+@keyframes animate {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 400% 0%; }
+}
+
+/* Search form - positioned on the right */
+form {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 500px;
+    height: 45px;
+    background: white;
+    border-radius: 25px;
+    border: 3px solid white;
+    overflow: hidden;
+}
+
+form input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    padding: 0 10px;
+    border-radius: 25px;
+    display: block;
+}
+
+form .fa {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: white;
+    color: #8c52ff;
+    font-size: 1.3em;
+    flex-shrink: 0;
+    margin-right: 2px;
+    transition: all 0.6s ease;
+}
+
+form:hover .fa {
+    background: #8c52ff;
+    color: white;
+}
+
+/* Rest of your CSS remains the same */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #8c52ff;
+    border-radius: 10px;
+}
+
+.menus {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menus ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menus li {
+    padding: 10px 12px;
+    margin: 0 2px;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.menus li:hover {
+    color: #ff77c0;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+}
+
+.left-sidebar {
+    width: 200px;
+    height: 100vh;
+    background: #8c52ff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    position: sticky;
+    top: 20px;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.write-post-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 0;
+    color: #626262;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    border: 2px solid #ddd;
+}
+
+.user-profile p {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-profile small {
+    color: gray;
+    font-size: 12px;
+}
+
+.write-post-container textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #ccc;
+    background: transparent;
+    resize: none;
+    font-size: 15px;
+    font-family: inherit;
+    color: #333;
+}
+
+.write-post-container textarea::placeholder {
+    color: #999;
+}
+
+.post {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    width: 100%;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-pic {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    border: 2px solid #ccc;
+}
+
+.post-user-info .username {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.post-user-info .time {
+    margin: 0;
+    font-size: 12px;
+    color: gray;
+}
+
+.post-content {
+    margin-top: 10px;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.comments-section {
+    border-top: 1px solid #ddd;
+    margin-top: 15px;
+    padding-top: 10px;
+}
+
+.comments-section h4 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.comment-pic {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.comment-content {
+    background: #f0f2f5;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+}
+
+.add-comment {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.add-comment input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    margin-right: 10px;
+}
+
+.add-comment button {
+    background-color: #7d2ae8;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add-comment button:hover {
+    background-color: #6620c0;
+}
+
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.toggleComments {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #8c52ff;
+    cursor: pointer;
+}
+
+.right-sidebar {
+    width: 300px;
+    height: 100vh;
+    background: #8c52ff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    border-radius: 12px;
+    overflow-y: auto;
+    color: white;
+    flex-shrink: 0;
+}
+
+.right-sidebar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.ad-card {
+    background-color: rgba(255,255,255,0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    text-align: center;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.ad-card:hover {
+    background-color: rgba(255,255,255,0.25);
+    transform: translateY(-5px);
+}
+
+.ad-card img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.ad-card p {
+    margin-top: 10px;
+    color: white;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .container {
+        flex-wrap: wrap;
+    }
+    
+    .left-sidebar, .right-sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        margin-bottom: 20px;
+    }
+    
+    .main-content {
+        width: 100%;
+    }
+    
+    form {
+        width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: row;
+        gap: 15px;
+    }
+    
+    .logo-name {
+        justify-content: center;
+    }
+    
+    form {
+        width: 100%;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .left-sidebar, .right-sidebar {
+        display: none;
+    }
+    
+    form {
+        width: 80%;
+    }
+    
+    #websiteName {
+        font-size: 22px;
+    }
+    
+    #logo svg {
+        height: 50px;
+    }
+}
+/* Style for menu links */
+.menus a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    height: 100%;
+    padding: 10px 12px;
+}
+
+.menus a:hover {
+    color: #ff77c0;
+}
+
+/* Ensure the list items don't have extra padding */
+.menus li {
+    padding: 0;
+    margin: 0 2px;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.menus li:hover {
+    color: #ff77c0;
+}

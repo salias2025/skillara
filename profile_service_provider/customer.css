@@ -1,0 +1,56 @@
+.my-clients {
+  width: 90%;
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 15px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.client-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  border-radius: 10px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.client-item:last-child {
+  border-bottom: none;
+}
+
+.client-item:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+.client-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 2px solid #ddd;
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-info .name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.client-info .email,
+.client-info .phone {
+  font-size: 0.85rem;
+  color: #666;
+}

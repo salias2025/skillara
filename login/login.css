@@ -1,0 +1,103 @@
+/* ------------------- General Reset ------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #7B3FE4, #DE005E);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ------------------- Container ------------------- */
+.register-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.register-container {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.register-container h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* ------------------- Form Elements ------------------- */
+.register-container form input[type="text"],
+.register-container form input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.register-container form input:focus {
+  outline: none;
+  border-color: #7B3FE4;
+  box-shadow: 0 0 5px rgba(123, 63, 228, 0.5);
+}
+
+/* ------------------- Submit Button ------------------- */
+.register-container form button {
+  width: 100%;
+  padding: 12px 0;
+  background: linear-gradient(135deg, #7B3FE4, #DE005E);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-container form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(123, 63, 228, 0.3);
+}
+
+/* ------------------- Link ------------------- */
+.login-link {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #7B3FE4;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ------------------- Responsive ------------------- */
+@media (max-width: 500px) {
+  .register-container {
+    padding: 30px 20px;
+  }
+
+  .register-container h2 {
+    font-size: 24px;
+  }
+}
