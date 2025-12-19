@@ -1,119 +1,169 @@
+// skillara/profile_service_provider/testimonials.js
+
 let swiperInstance;
 
-const testimonials = [
-  { name: "Sarah K.", image: "/images/user-1.jpg", text: "This service is amazing! Highly recommended.", rating: 5 },
-  { name: "Ahmed L.", image: "/images/user-2.jpg", text: "Professional and reliable, great experience.", rating: 4 },
-  { name: "Lina M.", image: "/images/user-3.jpg", text: "They exceeded my expectations on every level!", rating: 5 },
-  { name: "Omar T.", image: "/images/user-4.jpg", text: "Amazing creativity and attention to detail!", rating: 4 },
-  { name: "Saliha", image: "/images/user-5.jpg", text: "Is yours", rating: 1 }
-];
-
-// Render all testimonials
-function renderTestimonials() {
-  const wrapper = document.querySelector('.swiper-wrapper');
-  wrapper.innerHTML = '';
-
-  testimonials.forEach(t => {
-    const slide = document.createElement('div');
-    slide.classList.add('swiper-slide');
-    slide.innerHTML = `
-      <div class="testimonial-bubble">
-        <img src="${t.image}" alt="${t.name}">
-        <p class="testimonial-text">"${t.text}"</p>
-        <p class="user-name">- ${t.name}</p>
-        <div class="stars">
-          ${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}
-        </div>
-      </div>
-    `;
-    wrapper.appendChild(slide);
-  });
-
-  // Initialize Swiper only once
-  if (!swiperInstance) {
-    swiperInstance = new Swiper('.testimonials-swiper', {
-      slidesPerView: 3,
-      spaceBetween: 40,
-      loop: true,
-      pagination: { el: '.swiper-pagination', clickable: true },
-      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-      breakpoints: {
-        1024: { slidesPerView: 3, spaceBetween: 40 },
-        768: { slidesPerView: 2, spaceBetween: 30 },
-        480: { slidesPerView: 1, spaceBetween: 20 },
-      },
-    });
-  } else {
-    swiperInstance.update();
-  }
-}
-
-// Add editable testimonial bubble for new ratings
-function addEditableTestimonialBubble() {
-  const wrapper = document.querySelector('.swiper-wrapper');
-
-  // Prevent multiple editable bubbles
-  if (document.querySelector('.editable-testimonial')) return;
-
-  const slide = document.createElement('div');
-  slide.classList.add('swiper-slide');
-
-  slide.innerHTML = `
-    <div class="testimonial-bubble editable-testimonial">
-      <textarea class="testimonial-input" placeholder="Write your testimonial..."></textarea>
-      <input class="user-name-input" type="text" placeholder="Your name">
-      <select class="rating-input">
-        <option value="5">★★★★★</option>
-        <option value="4">★★★★☆</option>
-        <option value="3">★★★☆☆</option>
-        <option value="2">★★☆☆☆</option>
-        <option value="1">★☆☆☆☆</option>
-      </select>
-      <div class="testimonial-buttons">
-        <button class="submit-testimonial">Submit</button>
-        <button class="cancel-testimonial">Cancel</button>
-      </div>
-    </div>
-  `;
-
-  wrapper.appendChild(slide);
-  swiperInstance.update();
-  swiperInstance.slideTo(testimonials.length); // move to editable slide
-
-  // Handle submit
-  slide.querySelector('.submit-testimonial').addEventListener('click', () => {
-    const text = slide.querySelector('.testimonial-input').value.trim();
-    const name = slide.querySelector('.user-name-input').value.trim();
-    const rating = parseInt(slide.querySelector('.rating-input').value);
-
-    if (!text || !name) {
-      alert("Please fill in your name and testimonial!");
-      return;
+// 1. Load testimonials from database
+async function loadTestimonials() {
+    try {
+        console.log('🚀 Starting testimonials load...');
+        
+        // Get provider ID from profile.js (set globally)
+        const providerId = window.profileData?.providerId;
+        
+        if (!providerId) {
+            console.error('❌ No provider ID found in testimonials.js');
+            console.log('Debug: window.profileData =', window.profileData);
+            return;
+        }
+        
+        console.log(`🔍 Loading testimonials for provider: ${providerId}`);
+        
+        // Call your API handler
+        const response = await fetch(`testimonials_handler.php?action=getTestimonials&providerId=${providerId}`);
+        
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('📊 API response:', result);
+        
+        if (result.success) {
+            console.log(`✅ Loaded ${result.testimonials.length} testimonials from database`);
+            renderTestimonials(result.testimonials);
+        } else {
+            console.error('❌ API returned error:', result.message);
+            showNoTestimonials();
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading testimonials:', error);
+        showNoTestimonials();
     }
-
-    testimonials.push({
-      name,
-      image: "/images/default-profile.png",
-      text,
-      rating
-    });
-
-    renderTestimonials(); // Re-render all testimonials
-  });
-
-  // Handle cancel
-  slide.querySelector('.cancel-testimonial').addEventListener('click', () => {
-    slide.remove(); // remove the bubble
-    swiperInstance.update(); // update swiper so it doesn't leave empty space
-  });
 }
 
-// Event listener for "Rate Me" button
-document.addEventListener('DOMContentLoaded', () => {
-  renderTestimonials();
+// 2. Render testimonials
+function renderTestimonials(testimonials) {
+    const wrapper = document.querySelector('.testimonials-swiper .swiper-wrapper');
+    
+    if (!wrapper) {
+        console.error('❌ Swiper wrapper not found');
+        return;
+    }
+    
+    wrapper.innerHTML = '';
+    
+    // If no testimonials in database
+    if (testimonials.length === 0) {
+        showNoTestimonials();
+        return;
+    }
+    
+    // Render real testimonials from database
+    testimonials.forEach((testimonial) => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        
+        // Create stars HTML
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += i <= testimonial.rating ? '★' : '☆';
+        }
+        
+        slide.innerHTML = `
+            <div class="testimonial-bubble">
+                <div class="testimonial-header">
+                    <img src="${testimonial.image}" 
+                         alt="${testimonial.name}" 
+                         class="testimonial-avatar"
+                         onerror="this.src='/skillara/uploads/profile/default_avatar.jpg'">
+                    <div class="testimonial-client-info">
+                        <h4 class="testimonial-client-name">${testimonial.name}</h4>
+                    </div>
+                </div>
+                <p class="testimonial-text">"${testimonial.text}"</p>
+                <div class="testimonial-rating">${starsHtml}</div>
+            </div>
+        `;
+        
+        wrapper.appendChild(slide);
+    });
+    
+    // Initialize or update Swiper
+    initializeSwiper(testimonials.length > 1);
+}
 
-  const rateBtn = document.getElementById('rateBtn');
-  if (rateBtn) {
-    rateBtn.addEventListener('click', addEditableTestimonialBubble);
-  }
+// 3. Show "no testimonials" message
+function showNoTestimonials() {
+    const wrapper = document.querySelector('.testimonials-swiper .swiper-wrapper');
+    if (!wrapper) return;
+    
+    wrapper.innerHTML = `
+        <div class="swiper-slide">
+            <div class="testimonial-bubble">
+                <div class="no-testimonials">
+                    <i class="fas fa-comment-alt"></i>
+                    <p>No testimonials yet</p>
+                    <small>Be the first to leave a review!</small>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    initializeSwiper(false);
+}
+
+// 4. Initialize Swiper
+function initializeSwiper(loopEnabled) {
+    const swiperElement = document.querySelector('.testimonials-swiper');
+    if (!swiperElement) return;
+    
+    if (!swiperInstance) {
+        swiperInstance = new Swiper('.testimonials-swiper', {
+            slidesPerView: 3,
+            spaceBetween: 20,
+            loop: loopEnabled,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev'
+            },
+            breakpoints: {
+                1024: { slidesPerView: 3 },
+                768: { slidesPerView: 2 },
+                480: { slidesPerView: 1 }
+            }
+        });
+        
+        console.log('✅ Swiper initialized');
+    } else {
+        swiperInstance.update();
+        console.log('✅ Swiper updated');
+    }
+}
+
+// 5. Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('📄 Testimonials.js DOM loaded');
+    
+    // Wait for profile.js to set window.profileData
+    setTimeout(() => {
+        console.log('⏳ Checking window.profileData:', window.profileData);
+        loadTestimonials();
+    }, 1000);
 });
+
+// For debugging
+window.debugTestimonials = function() {
+    console.log('=== TESTIMONIALS DEBUG ===');
+    console.log('window.profileData:', window.profileData);
+    console.log('Provider ID:', window.profileData?.providerId);
+    
+    // Test API directly
+    fetch('testimonials_handler.php?action=getTestimonials&providerId=1')
+        .then(r => r.json())
+        .then(d => console.log('Direct API test:', d));
+};

@@ -1,167 +1,536 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const skillsContainer = document.querySelector('.skills-container');
-  const addSkillBtn = document.querySelector('.add-skill-btn');
+    const skillsContainer = document.querySelector('.skills-container');
+    const addSkillBtn = document.querySelector('.add-skill-btn');
 
-  // Owner flag
-  let isOwner = true; // set true or false
+    // Get providerId and isOwner from the global profileData
+    let providerId = window.profileData?.providerId;
+    let isOwner = window.profileData?.isOwner || false;
+    const API_BASE = 'skills_handler.php';
 
-  // In-memory skills array (with color property)
- let skills = [
-    { name: "Modern Web Development", icon: "fab fa-html5", color: "#e34c26" },
-    { name: "Advanced Styling Techniques", icon: "fab fa-css3-alt", color: "#264de4" },
-    { name: "Interactive Web Applications", icon: "fab fa-js-square", color: "#f0db4f" },
-    { name: "Clean Code Writing", icon: "fa-solid fa-code", color: "#000000" },
-    { name: "Modern UI Development", icon: "fab fa-react", color: "#61dafb" },
-    { name: "Backend Server Development", icon: "fab fa-node-js", color: "#3c873a" },
-    { name: "Python Scripting Development", icon: "fab fa-python", color: "#306998" },
-    { name: "Version Control Management", icon: "fab fa-git-alt", color: "#f1502f" },
-    { name: "System Programming Development", icon: "fa-solid fa-laptop-code", color: "#00599C" },
-    { name: "Database Management Systems", icon: "fa-solid fa-database", color: "#f29111" },
-    { name: "Web Backend Development", icon: "fab fa-php", color: "#8993be" },
-    { name: "Linux System Administration", icon: "fab fa-linux", color: "#FCC624" },
-    { name: "Containerization Technology Management", icon: "fab fa-docker", color: "#2496ed" },
-    { name: "REST API Development", icon: "fa-solid fa-plug", color: "#ff6600" },
-    { name: "Software Bug Fixing", icon: "fa-solid fa-bug", color: "#ff0000" },
-    { name: "Type-Safe JavaScript Development", icon: "fab fa-js", color: "#3178c6" },
-    { name: "Vue Framework Development", icon: "fab fa-vuejs", color: "#42b883" },
-    { name: "Enterprise Application Development", icon: "fab fa-java", color: "#007396" },
-    { name: "UI/UX Design Collaboration", icon: "fab fa-figma", color: "#f24e1e" },
-    { name: "Responsive Web Design", icon: "fa-solid fa-mobile-screen", color: "#4CAF50" },
-    { name: "Cross-Browser Compatibility", icon: "fa-solid fa-globe", color: "#2196F3" },
-    { name: "Performance Optimization Techniques", icon: "fa-solid fa-gauge-high", color: "#FF9800" },
-    { name: "Security Best Practices", icon: "fa-solid fa-shield-halved", color: "#9C27B0" },
-    { name: "Agile Development Methodology", icon: "fa-solid fa-people-group", color: "#795548" },
-    { name: "Cloud Infrastructure Management", icon: "fa-solid fa-cloud", color: "#00BCD4" },
-    { name: "Mobile App Development", icon: "fa-solid fa-mobile", color: "#8BC34A" },
-    { name: "Data Structure Implementation", icon: "fa-solid fa-diagram-project", color: "#607D8B" },
-    { name: "Algorithm Design Development", icon: "fa-solid fa-brain", color: "#E91E63" },
-    { name: "Testing Automation Framework", icon: "fa-solid fa-vial", color: "#3F51B5" },
-    { name: "Continuous Integration Deployment", icon: "fa-solid fa-arrows-rotate", color: "#FF5722" }
-];
+    // Skills model
+    const SkillsModel = {
+        skills: [],
 
-  // --- Render all skills ---
-  function renderSkills() {
-    skillsContainer.innerHTML = '';
-    skills.forEach(skill => {
-      const card = createSkillCard(skill);
-      skillsContainer.appendChild(card);
-    });
-  }
+        async loadSkills() {
+            if (!providerId) return [];
+            
+            try {
+                console.log('🔍 Loading skills for provider:', providerId);
+                const response = await fetch(`${API_BASE}?action=getSkills&providerId=${providerId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.skills = result.data.map(skill => ({
+                        id_skill: skill.id_skill,
+                        name: skill.title,
+                        icon: skill.icon,
+                        color: skill.color || this.getRandomColor(),
+                        proficiency: parseInt(skill.mastery)
+                    }));
+                    console.log('✅ Loaded skills:', this.skills);
+                    return this.skills;
+                } else {
+                    throw new Error(result.message || 'Failed to load skills');
+                }
+            } catch (error) {
+                console.error('Failed to load skills:', error);
+                this.showNotification('Failed to load skills', 'error');
+                return [];
+            }
+        },
 
-  // --- Create skill card (view mode) ---
-  function createSkillCard(skill) {
-    const card = document.createElement('div');
-    card.classList.add('skill-card');
-    card.innerHTML = `
-      <i class="${skill.icon} skill-icon"></i>
-      <span class="skill-name">${skill.name}</span>
-      ${isOwner ? `
-      <div class="skill-actions">
-        <button class="edit"><i class="fas fa-pen"></i></button>
-        <button class="delete"><i class="fas fa-trash"></i></button>
-      </div>` : ''}
-    `;
+        async addSkill(name, icon, proficiency, color = '#7B3FE4') {
+            if (!isOwner || !providerId) {
+                throw new Error('Not authorized to add skills');
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'addSkill');
+                formData.append('providerId', providerId);
+                formData.append('title', name);
+                formData.append('icon', icon);
+                formData.append('mastery', proficiency);
+                formData.append('color', color);
+                
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Add skill error:', error);
+                throw error;
+            }
+        },
 
-    const iconEl = card.querySelector('.skill-icon');
-    iconEl.style.color = skill.color || '#000';
+        async updateSkill(skillId, name, icon, proficiency, color = null) {
+            if (!isOwner || !providerId) {
+                throw new Error('Not authorized to update skills');
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'updateSkill');
+                formData.append('providerId', providerId);
+                formData.append('skillId', skillId);
+                formData.append('title', name);
+                formData.append('icon', icon);
+                formData.append('mastery', proficiency);
+                
+                // Include color if provided
+                if (color) {
+                    formData.append('color', color);
+                }
+                
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Update skill error:', error);
+                throw error;
+            }
+        },
 
-    // Double-click to change icon color
-    iconEl.addEventListener('dblclick', () => {
-      if (!isOwner) return;
-      if (card.querySelector('.color-picker')) return;
+        async updateSkillColor(skillId, name, icon, proficiency, color) {
+            if (!isOwner || !providerId) {
+                throw new Error('Not authorized to update skills');
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'updateSkill');
+                formData.append('providerId', providerId);
+                formData.append('skillId', skillId);
+                formData.append('title', name);
+                formData.append('icon', icon);
+                formData.append('mastery', proficiency);
+                formData.append('color', color);
+                
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Update skill color error:', error);
+                throw error;
+            }
+        },
 
-      const colorInput = document.createElement('input');
-      colorInput.type = 'color';
-      colorInput.value = skill.color || '#000000';
-      colorInput.classList.add('color-picker');
-      colorInput.style.marginLeft = '10px';
+        async deleteSkill(skillId) {
+            if (!isOwner || !providerId) {
+                throw new Error('Not authorized to delete skills');
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'deleteSkill');
+                formData.append('providerId', providerId);
+                formData.append('skillId', skillId);
+                
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Delete skill error:', error);
+                throw error;
+            }
+        },
 
-      colorInput.addEventListener('input', () => {
-        iconEl.style.color = colorInput.value;
-        skill.color = colorInput.value;
-      });
+        getRandomColor() {
+            const colors = [
+                '#7B3FE4', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+                '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE',
+                '#85C1E9', '#82E0AA', '#F8C471', '#F1948A', '#85C1E9',
+                '#A569BD', '#5DADE2', '#73C6B6', '#D7BDE2', '#F0B27A'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        },
 
-      colorInput.addEventListener('blur', () => colorInput.remove());
-      card.appendChild(colorInput);
-      colorInput.focus();
-    });
+        showNotification(message, type = 'success') {
+            // Reuse the notification function from profile.js if available
+            if (window.Utils && window.Utils.showNotification) {
+                return window.Utils.showNotification(message, type);
+            }
+            
+            // Fallback notification
+            console.log(`💬 Notification (${type}):`, message);
+            
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
 
-    if (isOwner) {
-      // Delete skill
-      card.querySelector('.delete').addEventListener('click', () => {
-        if (!confirm(`Delete skill "${skill.name}"?`)) return;
-        skills = skills.filter(s => s !== skill);
-        renderSkills();
-      });
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}"></i>
+                <span>${message}</span>
+                <button class="close-notification">&times;</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+            
+            notification.querySelector('.close-notification').addEventListener('click', () => {
+                notification.remove();
+            });
+        },
 
-      // Edit skill
-      card.querySelector('.edit').addEventListener('click', () => {
-        const editCard = createEditableCard(skill);
-        card.replaceWith(editCard);
-      });
+        hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 
+                `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` 
+                : '123, 63, 228';
+        }
+    };
+
+    // --- Render all skills ---
+    async function renderSkills() {
+        // Load skills from database
+        await SkillsModel.loadSkills();
+        
+        skillsContainer.innerHTML = '';
+        
+        if (SkillsModel.skills.length === 0) {
+            skillsContainer.innerHTML = `
+                <div class="no-skills">
+                    <i class="fas fa-code"></i>
+                    <h3>No skills added yet</h3>
+                    <p>${isOwner ? 'Add your first skill to showcase your expertise!' : 'This provider hasn\'t added any skills yet.'}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        SkillsModel.skills.forEach(skill => {
+            const card = createSkillCard(skill);
+            skillsContainer.appendChild(card);
+        });
+        
+        // Animate proficiency bars when they come into view
+        animateProficiencyBars();
     }
 
-    return card;
-  }
+    // --- Create skill card (view mode) ---
+    function createSkillCard(skill) {
+        const card = document.createElement('div');
+        card.classList.add('skill-card');
+        card.style.setProperty('--skill-color', skill.color);
+        card.style.setProperty('--skill-color-rgb', SkillsModel.hexToRgb(skill.color));
+        
+        card.innerHTML = `
+            <div class="skill-header">
+                <i class="${skill.icon} skill-icon" style="color: ${skill.color}"></i>
+                <div class="skill-name">${skill.name}</div>
+            </div>
+            
+            <div class="skill-proficiency">
+                <div class="proficiency-header">
+                    <span class="proficiency-label">Mastery Level</span>
+                    <span class="proficiency-percentage">${skill.proficiency}%</span>
+                </div>
+                <div class="proficiency-bar">
+                    <div class="proficiency-fill" style="width: ${skill.proficiency}%; background: linear-gradient(90deg, ${skill.color}, rgba(${SkillsModel.hexToRgb(skill.color)}, 0.7))"></div>
+                </div>
+            </div>
+            
+            ${isOwner ? `
+            <div class="skill-actions">
+                <button class="edit">
+                    <i class="fas fa-pen"></i>
+                    <span>Edit</span>
+                </button>
+                <button class="delete">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete</span>
+                </button>
+            </div>
+            
+            <div class="color-picker-container">
+                <span class="color-picker-label">Icon Color:</span>
+                <input type="color" class="color-picker" value="${skill.color}" title="Change icon color">
+            </div>
+            ` : ''}
+        `;
 
-  // --- Create editable skill card ---
-  function createEditableCard(skill = { name: '', icon: '', color: '#000000' }) {
-    const card = document.createElement('div');
-    card.classList.add('skill-card');
-    card.innerHTML = `
-      <input type="text" class="skill-input skill-input-name" placeholder="Skill Name" value="${skill.name}" />
-      <input type="text" class="skill-input skill-input-icon" placeholder="FontAwesome Icon (fab fa-js-square)" value="${skill.icon}" />
-      <div style="display:flex; gap:10px; margin-left:auto; margin-top:5px;">
-        <button class="save-skill-btn">Save</button>
-        <button class="cancel-skill-btn">Cancel</button>
-      </div>
-    `;
+        const iconEl = card.querySelector('.skill-icon');
+        const proficiencyFill = card.querySelector('.proficiency-fill');
+        
+        // Color picker functionality for owners
+        if (isOwner) {
+            const colorPicker = card.querySelector('.color-picker');
+            
+            // Function to update color
+            const updateColor = async (newColor) => {
+                iconEl.style.color = newColor;
+                skill.color = newColor;
+                card.style.setProperty('--skill-color', newColor);
+                card.style.setProperty('--skill-color-rgb', SkillsModel.hexToRgb(newColor));
+                
+                // Update proficiency bar color
+                proficiencyFill.style.background = `linear-gradient(90deg, ${newColor}, rgba(${SkillsModel.hexToRgb(newColor)}, 0.7))`;
+                
+                // Save color to database
+                try {
+                    const result = await SkillsModel.updateSkillColor(
+                        skill.id_skill, 
+                        skill.name, 
+                        skill.icon, 
+                        skill.proficiency, 
+                        newColor
+                    );
+                    
+                    if (!result.success) {
+                        console.error('Failed to save color:', result.message);
+                        SkillsModel.showNotification('Failed to save color', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error saving color:', error);
+                    SkillsModel.showNotification('Error saving color', 'error');
+                }
+            };
+            
+            // Handle color picker changes
+            colorPicker.addEventListener('input', (e) => {
+                updateColor(e.target.value);
+            });
+            
+            // Delete skill
+            card.querySelector('.delete').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (confirm(`Delete skill "${skill.name}"?`)) {
+                    try {
+                        const result = await SkillsModel.deleteSkill(skill.id_skill);
+                        if (result.success) {
+                            await renderSkills();
+                            SkillsModel.showNotification(`Skill "${skill.name}" deleted!`, 'success');
+                        } else {
+                            SkillsModel.showNotification(result.message, 'error');
+                        }
+                    } catch (error) {
+                        SkillsModel.showNotification(`Error deleting skill: ${error.message}`, 'error');
+                    }
+                }
+            });
 
-    // Cancel button
-    card.querySelector('.cancel-skill-btn').addEventListener('click', () => {
-      if (skill.name) {
-        const viewCard = createSkillCard(skill);
-        card.replaceWith(viewCard);
-      } else {
-        card.remove();
-      }
-    });
+            // Edit skill
+            card.querySelector('.edit').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const editCard = createEditableCard(skill);
+                card.replaceWith(editCard);
+                editCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
 
-    // Save button
-    card.querySelector('.save-skill-btn').addEventListener('click', () => {
-      const name = card.querySelector('.skill-input-name').value.trim();
-      const icon = card.querySelector('.skill-input-icon').value.trim();
+        return card;
+    }
 
-      if (!name || !icon) {
-        alert('Name and Icon are required!');
-        return;
-      }
+    // --- Animate proficiency bars on scroll ---
+    function animateProficiencyBars() {
+        const proficiencyBars = document.querySelectorAll('.proficiency-fill');
+        
+        proficiencyBars.forEach(bar => {
+            // Reset width to 0 for animation
+            const finalWidth = bar.style.width;
+            bar.style.width = '0%';
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Animate the bar filling up
+                        setTimeout(() => {
+                            bar.style.width = finalWidth;
+                        }, 200);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            
+            observer.observe(bar.parentElement.parentElement.parentElement);
+        });
+    }
 
-      if (skill.name) {
-        skill.name = name;
-        skill.icon = icon;
-      } else {
-        skills.unshift({ name, icon, color: '#000000' });
-      }
+    // --- Create editable skill card ---
+    function createEditableCard(skill = { 
+        id_skill: null,
+        name: '', 
+        icon: '', 
+        color: SkillsModel.getRandomColor(), 
+        proficiency: 70 
+    }) {
+        const card = document.createElement('div');
+        card.classList.add('skill-card', 'editing');
+        card.style.setProperty('--skill-color', skill.color);
+        
+        card.innerHTML = `
+            <input type="text" class="skill-input skill-input-name" 
+                   placeholder="Skill Name (e.g., React Development)" 
+                   value="${skill.name}" />
+            
+            <input type="text" class="skill-input skill-input-icon" 
+                   placeholder="FontAwesome Icon (e.g., fab fa-react)" 
+                   value="${skill.icon}" />
+            
+            <div style="margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #666; font-size: 14px;">Proficiency Level</span>
+                    <span style="font-weight: 600; color: var(--skill-color);" class="proficiency-display">
+                        ${skill.proficiency}%
+                    </span>
+                </div>
+                <input type="range" class="skill-proficiency-slider" 
+                       min="0" max="100" value="${skill.proficiency}" />
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="save-skill-btn">
+                    <i class="fas fa-check"></i>
+                    ${skill.id_skill ? 'Update' : 'Add'}
+                </button>
+                <button class="cancel-skill-btn">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+            </div>
+        `;
 
-      renderSkills();
-    });
+        // Proficiency slider
+        const slider = card.querySelector('.skill-proficiency-slider');
+        const display = card.querySelector('.proficiency-display');
+        
+        slider.addEventListener('input', (e) => {
+            display.textContent = `${e.target.value}%`;
+            slider.style.setProperty('--skill-color', skill.color);
+        });
 
-    return card;
-  }
+        // Cancel button
+        card.querySelector('.cancel-skill-btn').addEventListener('click', () => {
+            if (skill.id_skill) {
+                const viewCard = createSkillCard(skill);
+                card.replaceWith(viewCard);
+            } else {
+                card.remove();
+            }
+        });
 
-  // --- Add Skill button ---
-  if (isOwner) {
-    addSkillBtn.style.display = 'flex';
-    addSkillBtn.addEventListener('click', () => {
-      const newCard = createEditableCard();
-      skillsContainer.prepend(newCard);
-      newCard.scrollIntoView({ behavior: 'smooth' });
-    });
-  } else {
-    addSkillBtn.style.display = 'none';
-  }
+        // Save/Update button
+        card.querySelector('.save-skill-btn').addEventListener('click', async () => {
+            const name = card.querySelector('.skill-input-name').value.trim();
+            const icon = card.querySelector('.skill-input-icon').value.trim();
+            const proficiency = parseInt(slider.value);
 
-  // --- Initial render ---
-  renderSkills();
+            if (!name || !icon) {
+                SkillsModel.showNotification('Skill name and icon are required!', 'error');
+                return;
+            }
+
+            try {
+                if (skill.id_skill) {
+                    // Update existing skill (with current color)
+                    const result = await SkillsModel.updateSkill(
+                        skill.id_skill, 
+                        name, 
+                        icon, 
+                        proficiency, 
+                        skill.color
+                    );
+                    
+                    if (result.success) {
+                        skill.name = name;
+                        skill.icon = icon;
+                        skill.proficiency = proficiency;
+                        await renderSkills();
+                        SkillsModel.showNotification(`Skill "${name}" updated!`, 'success');
+                    } else {
+                        SkillsModel.showNotification(result.message, 'error');
+                    }
+                } else {
+                    // Add new skill (with default color)
+                    const result = await SkillsModel.addSkill(
+                        name, 
+                        icon, 
+                        proficiency, 
+                        skill.color
+                    );
+                    
+                    if (result.success) {
+                        await renderSkills();
+                        SkillsModel.showNotification(`Skill "${name}" added!`, 'success');
+                    } else {
+                        SkillsModel.showNotification(result.message, 'error');
+                    }
+                }
+            } catch (error) {
+                SkillsModel.showNotification(`Error: ${error.message}`, 'error');
+            }
+        });
+
+        // Save on Enter key
+        card.querySelector('.skill-input-name').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                card.querySelector('.save-skill-btn').click();
+            }
+        });
+
+        return card;
+    }
+
+    // --- Add Skill button ---
+    if (isOwner && addSkillBtn) {
+        addSkillBtn.style.display = 'flex';
+        addSkillBtn.addEventListener('click', () => {
+            const newCard = createEditableCard();
+            skillsContainer.prepend(newCard);
+            newCard.scrollIntoView({ behavior: 'smooth' });
+            
+            // Focus on the first input
+            setTimeout(() => {
+                newCard.querySelector('.skill-input-name').focus();
+            }, 100);
+        });
+    } else if (addSkillBtn) {
+        addSkillBtn.style.display = 'none';
+    }
+
+    // --- Initialize ---
+    async function init() {
+        console.log('🚀 Initializing skills section...');
+        console.log('✅ Provider ID:', providerId);
+        console.log('✅ Is Owner:', isOwner);
+        
+        if (!providerId) {
+            console.error('No provider ID available');
+            return;
+        }
+        
+        await renderSkills();
+        console.log('✅ Skills section initialized');
+    }
+
+    // Wait a bit for profile.js to set window.profileData
+    setTimeout(() => {
+        if (!providerId) {
+            // Try to get from profile.js again
+            providerId = window.profileData?.providerId;
+            isOwner = window.profileData?.isOwner || false;
+        }
+        init();
+    }, 500);
 });

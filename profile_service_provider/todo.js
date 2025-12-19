@@ -53,27 +53,33 @@ function setupEventListeners() {
         });
     });
     
-    // Form submission
-    const form = document.querySelector('form');
+    // Form submission - SPECIFICALLY target the to-do list modal form
+    const todoForm = document.querySelector('.modal-overlay form');
     const submitBtn = document.querySelector('.btn-submit');
     
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        addWorkItem();
-    });
+    if (todoForm) {
+        todoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addWorkItem();
+        });
+    }
     
-    submitBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        addWorkItem();
-    });
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            addWorkItem();
+        });
+    }
     
     // Close modal when clicking outside
     const modalOverlay = document.querySelector('.modal-overlay');
-    modalOverlay.addEventListener('click', function(e) {
-        if (e.target === modalOverlay) {
-            document.getElementById('modal-toggle').checked = false;
-        }
-    });
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                document.getElementById('modal-toggle').checked = false;
+            }
+        });
+    }
 }
 
 // Validate date
@@ -101,17 +107,35 @@ function isValidDate(dateString) {
 
 // Add new work item
 function addWorkItem() {
-    const clientName = document.querySelector('.form-input[placeholder="John Doe"]').value.trim();
-    const description = document.querySelector('.form-textarea').value.trim();
-    const addedDate = document.querySelectorAll('.form-input[type="date"]')[0].value;
-    const dueDate = document.querySelectorAll('.form-input[type="date"]')[1].value;
-    const status = document.querySelector('.form-select').value;
+    const todoForm = document.querySelector('.modal-overlay form');
+    if (!todoForm) return;
+    
+    const clientName = todoForm.querySelector('.form-input[placeholder="John Doe"]')?.value.trim();
+    const description = todoForm.querySelector('.form-textarea')?.value.trim();
+    const addedDate = todoForm.querySelectorAll('.form-input[type="date"]')[0]?.value;
+    const dueDate = todoForm.querySelectorAll('.form-input[type="date"]')[1]?.value;
+    const status = todoForm.querySelector('.form-select')?.value;
 
-    if (!clientName) return alert('Please enter a client name!');
-    if (!addedDate) return alert('Please enter an added date!');
-    if (!dueDate) return alert('Please enter a due date!');
-    if (!isValidDate(addedDate)) return alert('Invalid added date!');
-    if (!isValidDate(dueDate)) return alert('Invalid due date!');
+    if (!clientName) {
+        alert('Please enter a client name!');
+        return;
+    }
+    if (!addedDate) {
+        alert('Please enter an added date!');
+        return;
+    }
+    if (!dueDate) {
+        alert('Please enter a due date!');
+        return;
+    }
+    if (!isValidDate(addedDate)) {
+        alert('Invalid added date!');
+        return;
+    }
+    if (!isValidDate(dueDate)) {
+        alert('Invalid due date!');
+        return;
+    }
 
     const addedDateObj = new Date(addedDate);
     const dueDateObj = new Date(dueDate);
@@ -120,8 +144,14 @@ function addWorkItem() {
     addedDateObj.setHours(0,0,0,0);
     dueDateObj.setHours(0,0,0,0);
 
-    if (addedDateObj > today) return alert('Added date cannot be in the future!');
-    if (dueDateObj < addedDateObj) return alert('Due date cannot be before added date!');
+    if (addedDateObj > today) {
+        alert('Added date cannot be in the future!');
+        return;
+    }
+    if (dueDateObj < addedDateObj) {
+        alert('Due date cannot be before added date!');
+        return;
+    }
 
     const newItem = {
         id: nextId++,
@@ -134,7 +164,7 @@ function addWorkItem() {
 
     workItems.push(newItem);
     renderWorkItems();
-    document.querySelector('form').reset();
+    todoForm.reset();
     document.getElementById('modal-toggle').checked = false;
     alert('Work item added successfully!');
 }
@@ -175,6 +205,7 @@ function getStatusBadge(status) {
 // Render all work items
 function renderWorkItems() {
     const workList = document.querySelector('.work-list');
+    if (!workList) return;
     
     let filteredItems = currentFilter === "all" ? workItems : workItems.filter(item => item.status === currentFilter);
     
