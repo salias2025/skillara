@@ -237,7 +237,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Add Service button ---
+    
+
+    // --- Initialize ---
+    async function init() {
+        console.log('🚀 Initializing services section...');
+        console.log('✅ Provider ID:', providerId);
+        console.log('✅ Is Owner:', isOwner);
+        
+        if (!providerId) {
+            console.error('No provider ID available');
+            return;
+        }
+        
+       // --- Add Service button ---
     if (isOwner && addServiceBtn) {
         addServiceBtn.style.display = 'flex';
         addServiceBtn.addEventListener('click', () => {
@@ -291,17 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addServiceBtn.style.display = 'none';
     }
 
-    // --- Initialize ---
-    async function init() {
-        console.log('🚀 Initializing services section...');
-        console.log('✅ Provider ID:', providerId);
-        console.log('✅ Is Owner:', isOwner);
-        
-        if (!providerId) {
-            console.error('No provider ID available');
-            return;
-        }
-        
         await renderServices();
         console.log('✅ Services section initialized');
     }

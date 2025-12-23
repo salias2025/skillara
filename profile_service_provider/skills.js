@@ -492,7 +492,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
-    // --- Add Skill button ---
+   
+
+    // --- Initialize ---
+    async function init() {
+        console.log('🚀 Initializing skills section...');
+        console.log('✅ Provider ID:', providerId);
+        console.log('✅ Is Owner:', isOwner);
+        
+        if (!providerId) {
+            console.error('No provider ID available');
+            return;
+        }
+
+         // --- Add Skill button ---
     if (isOwner && addSkillBtn) {
         addSkillBtn.style.display = 'flex';
         addSkillBtn.addEventListener('click', () => {
@@ -508,17 +521,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (addSkillBtn) {
         addSkillBtn.style.display = 'none';
     }
-
-    // --- Initialize ---
-    async function init() {
-        console.log('🚀 Initializing skills section...');
-        console.log('✅ Provider ID:', providerId);
-        console.log('✅ Is Owner:', isOwner);
-        
-        if (!providerId) {
-            console.error('No provider ID available');
-            return;
-        }
         
         await renderSkills();
         console.log('✅ Skills section initialized');

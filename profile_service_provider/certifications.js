@@ -429,7 +429,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return card;
   }
 
-  if (isOwner && addCertBtn) {
+ 
+
+  // --- Initialize ---
+  async function init() {
+    console.log('🚀 Initializing certifications section...');
+    console.log('✅ Provider ID:', providerId);
+    console.log('✅ Is Owner:', isOwner);
+    
+    if (!providerId) {
+      console.error('No provider ID available');
+      return;
+    }
+
+     if (isOwner && addCertBtn) {
     addCertBtn.style.display = 'flex';
     addCertBtn.addEventListener('click', () => {
       const card = createEditableCard();
@@ -444,17 +457,6 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (addCertBtn) {
     addCertBtn.style.display = 'none';
   }
-
-  // --- Initialize ---
-  async function init() {
-    console.log('🚀 Initializing certifications section...');
-    console.log('✅ Provider ID:', providerId);
-    console.log('✅ Is Owner:', isOwner);
-    
-    if (!providerId) {
-      console.error('No provider ID available');
-      return;
-    }
     
     await renderCertifications();
     console.log('✅ Certifications section initialized');
