@@ -494,6 +494,7 @@ function hireProvider(providerId, providerName) {
     window.location.href = '/skillara/profile_service_provider/profile.html';
 }
 
+// ===== VIEW PROFILE FUNCTION =====
 function viewProfile(providerId, providerName) {
     console.log('View Profile clicked - Provider ID:', providerId, 'Name:', providerName);
     
@@ -501,7 +502,7 @@ function viewProfile(providerId, providerName) {
     const providerData = {
         id: providerId,
         name: providerName,
-        isOwner: false
+        isOwner: false // This is a client viewing the profile
     };
     
     // Set the new format that profile.js expects
@@ -511,18 +512,6 @@ function viewProfile(providerId, providerName) {
     // Also set the old format for backward compatibility
     sessionStorage.setItem('selectedProvider', JSON.stringify(providerData));
     
-    window.location.href = '/skillara/profile_service_provider/profile.html';
-}
-
-function viewProfile(providerId, providerName) {
-    const providerData = {
-        id: providerId,
-        name: providerName,
-        isOwner: false // This is a client viewing the profile
-    };
-    
-    sessionStorage.setItem('selectedProvider', JSON.stringify(providerData));
-    sessionStorage.setItem('profile_isOwner', 'false');
     window.location.href = '/skillara/profile_service_provider/profile.html';
 }
 

@@ -32,12 +32,13 @@ class MainDB {
         }
     }
 
-    /**
+        /**
      * Get providers client worked with
      */
     public function getClientProviders($client_id) {
         try {
             $sql = "SELECT 
+                    sp.id_provider,
                     sp.profile_picture,
                     sp.username,
                     GROUP_CONCAT(DISTINCT st.name_service_type SEPARATOR ', ') as services,
@@ -57,6 +58,7 @@ class MainDB {
             $providers = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $providers[] = [
+                    'id' => $row['id_provider'],
                     'name' => $row['username'],
                     'service' => $row['services'] ?: 'Service Provider',
                     'rating' => round($row['rating'], 1),
@@ -71,7 +73,6 @@ class MainDB {
             return [];
         }
     }
-
     /**
      * Get service provider info for sidebar
      */
@@ -338,5 +339,32 @@ class MainDB {
             return [];
         }
     }
+
+
+    
+/**
+ * Update client profile picture
+ */
+public function updateClientProfilePicture($clientId, $imageName) {
+    try {
+        $sql = "UPDATE Client 
+                SET profile_picture = :image_name 
+                WHERE id_client = :client_id";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":image_name", $imageName);
+        $stmt->bindParam(":client_id", $clientId);
+        
+        return $stmt->execute();
+        
+    } catch(PDOException $e) {
+        error_log("MainDB updateClientProfilePicture error: " . $e->getMessage());
+        return false;
+    }
 }
+}
+
+
+
+
 ?>

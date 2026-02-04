@@ -44,11 +44,19 @@
     </div>
   </div>
 
-  <!-- ===== CUSTOMER SIDEBAR ===== -->
+ <!-- ===== CUSTOMER SIDEBAR ===== -->
 <div class="customer-sidebar">   
   <!-- Customer Profile Section -->
   <div class="customer-profile-info">
-    <img  alt="Profile Picture" class="customer-profile-pic" />
+   <div class="customer-profile-pic-container" onclick="document.getElementById('customerProfilePicInput').click()">
+      <img alt="Profile Picture" class="customer-profile-pic" />
+      <div class="profile-pic-overlay">
+        <i class="fas fa-camera"></i>
+        <span>Change Photo</span>
+      </div>
+      <input type="file" id="customerProfilePicInput" accept="image/*" style="display: none;">
+    </div>
+    
     <h2 class="customer-name">Jane Doe</h2>
     <p class="customer-email">jane.doe@example.com</p>
   </div>

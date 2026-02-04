@@ -543,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         async formSubmit(e) {
             e.preventDefault();
+            e.stopImmediatePropagation(); // FIX: Added this line to prevent other form handlers
             e.stopPropagation();
 
             const formData = {

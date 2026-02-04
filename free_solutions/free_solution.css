@@ -1,3 +1,5 @@
+/* free_solution.css */
+
 * {
     margin: 0;
     padding: 0;
@@ -14,7 +16,7 @@ header {
     background: #7d2ae8;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     display: flex;
-    justify-content: space-between; /* This pushes logo left and search right */
+    justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
     border-radius: 10px;
@@ -28,9 +30,14 @@ header {
     gap: 15px;
 }
 
+#logo {
+    width: 40px;
+    height: 40px;
+}
+
 #logo svg {
-    height: 70px;
-    width: auto;
+    width: 100%;
+    height: 100%;
 }
 
 #websiteName {
@@ -48,13 +55,13 @@ header {
     100% { background-position: 400% 0%; }
 }
 
-/* Search form - positioned on the right */
-form {
+/* Search form */
+#searchForm {
     position: relative;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    width: 500px;
+    width: 300px;
     height: 45px;
     background: white;
     border-radius: 25px;
@@ -62,7 +69,7 @@ form {
     overflow: hidden;
 }
 
-form input {
+#searchInput {
     flex: 1;
     height: 100%;
     border: none;
@@ -73,7 +80,7 @@ form input {
     display: block;
 }
 
-form .fa {
+#searchForm .fa {
     width: 40px;
     height: 40px;
     display: flex;
@@ -88,26 +95,51 @@ form .fa {
     transition: all 0.6s ease;
 }
 
-form:hover .fa {
+#searchForm:hover .fa {
     background: #8c52ff;
     color: white;
 }
 
-/* Rest of your CSS remains the same */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
+/* Add Advertisement Button */
+.btn-add-ad {
     background: #8c52ff;
-    border-radius: 10px;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s ease;
 }
 
-.menus {
-    flex: 1;
+.btn-add-ad:hover {
+    background: #7d2ae8;
+}
+
+/* Main Container */
+.container {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Left Sidebar */
+.left-sidebar {
+    width: 200px;
+    height: 100vh;
+    background: #8c52ff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    position: sticky;
+    top: 20px;
+    flex-shrink: 0;
 }
 
 .menus ul {
@@ -128,34 +160,24 @@ form:hover .fa {
     transition: color 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
 }
 
 .menus li:hover {
     color: #ff77c0;
 }
 
-.container {
+.menus a {
+    text-decoration: none;
+    color: inherit;
     display: flex;
-    gap: 20px;
-    padding: 20px;
-    align-items: flex-start;
+    align-items: center;
+    gap: 10px;
     width: 100%;
-    max-width: 100%;
+    height: 100%;
 }
 
-.left-sidebar {
-    width: 200px;
-    height: 100vh;
-    background: #8c52ff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 12px;
-    position: sticky;
-    top: 20px;
-    flex-shrink: 0;
-}
-
+/* Main Content */
 .main-content {
     flex: 1;
     display: flex;
@@ -163,6 +185,7 @@ form:hover .fa {
     min-width: 0;
 }
 
+/* Write Post Section */
 .write-post-container {
     background: #fff;
     border-radius: 12px;
@@ -189,18 +212,22 @@ form:hover .fa {
     border: 2px solid #ddd;
 }
 
-.user-profile p {
+.user-profile div p {
     margin: 0;
     font-weight: 600;
     color: #333;
 }
 
-.user-profile small {
+.user-profile div small {
     color: gray;
     font-size: 12px;
 }
 
-.write-post-container textarea {
+.post-input-container {
+    width: 100%;
+}
+
+.post-input-container textarea {
     width: 100%;
     border: none;
     outline: none;
@@ -210,12 +237,38 @@ form:hover .fa {
     font-size: 15px;
     font-family: inherit;
     color: #333;
+    min-height: 80px;
 }
 
-.write-post-container textarea::placeholder {
+.post-input-container textarea::placeholder {
     color: #999;
 }
 
+.btn-post {
+    background-color: #7d2ae8;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+    float: right;
+    transition: 0.2s;
+}
+
+.btn-post:hover {
+    background-color: #6620c0;
+}
+
+/* Posts Container */
+#postsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Post Card */
 .post {
     background: #fff;
     border-radius: 12px;
@@ -246,31 +299,57 @@ form:hover .fa {
     font-weight: 600;
 }
 
-.post-user-info .time {
+.post-user-info .post-time {
     margin: 0;
     font-size: 12px;
     color: gray;
 }
 
-.post-content {
+.post-content p {
     margin-top: 10px;
+    color: #333;
+    line-height: 1.5;
 }
 
 .post-image {
     width: 100%;
+    max-height: 400px;
+    object-fit: contain;
     border-radius: 10px;
     margin-top: 10px;
+    border: 1px solid #ddd;
 }
 
+/* Comments Section */
 .comments-section {
     border-top: 1px solid #ddd;
     margin-top: 15px;
     padding-top: 10px;
 }
 
-.comments-section h4 {
-    color: #555;
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
+}
+
+.comments-header h4 {
+    color: #555;
+    margin: 0;
+    font-size: 16px;
+}
+
+.toggleComments {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #8c52ff;
+    cursor: pointer;
+}
+
+.commentsList {
+    display: none;
 }
 
 .comment {
@@ -283,7 +362,9 @@ form:hover .fa {
     width: 35px;
     height: 35px;
     border-radius: 50%;
+    object-fit: cover;
     margin-right: 10px;
+    flex-shrink: 0;
 }
 
 .comment-content {
@@ -293,20 +374,39 @@ form:hover .fa {
     max-width: 80%;
 }
 
+.comment-content p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.comment-content .time {
+    margin: 5px 0 0 0;
+    font-size: 11px;
+    color: #777;
+}
+
 .add-comment {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
-    width: 100%;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.add-comment img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 .add-comment input {
     flex: 1;
-    padding: 8px 10px;
+    padding: 8px 12px;
     border-radius: 20px;
     border: 1px solid #ccc;
     outline: none;
-    margin-right: 10px;
+    font-size: 14px;
 }
 
 .add-comment button {
@@ -316,6 +416,7 @@ form:hover .fa {
     border-radius: 20px;
     padding: 8px 15px;
     cursor: pointer;
+    font-weight: 600;
     transition: 0.2s;
 }
 
@@ -323,21 +424,7 @@ form:hover .fa {
     background-color: #6620c0;
 }
 
-.comments-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.toggleComments {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    color: #8c52ff;
-    cursor: pointer;
-}
-
+/* Right Sidebar (Advertisements) */
 .right-sidebar {
     width: 300px;
     height: 100vh;
@@ -355,12 +442,18 @@ form:hover .fa {
 .right-sidebar h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: white;
+}
+
+#adsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .ad-card {
     background-color: rgba(255,255,255,0.1);
     padding: 15px;
-    margin-bottom: 15px;
     border-radius: 10px;
     text-align: center;
     transition: background 0.3s, transform 0.3s;
@@ -372,13 +465,210 @@ form:hover .fa {
 }
 
 .ad-card img {
-    max-width: 100%;
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
     border-radius: 8px;
+    margin-bottom: 10px;
 }
 
 .ad-card p {
     margin-top: 10px;
     color: white;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.ad-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 5px 15px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 15px;
+    transition: background 0.3s;
+}
+
+.ad-link:hover {
+    background: rgba(255,255,255,0.3);
+    text-decoration: none;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    margin: 50px auto;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background: #7d2ae8;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+#addAdForm {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group textarea,
+.form-group input[type="url"],
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.form-group textarea:focus,
+.form-group input[type="url"]:focus {
+    outline: none;
+    border-color: #7d2ae8;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #777;
+    font-size: 12px;
+}
+
+.btn-submit {
+    background-color: #7d2ae8;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 25px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #6620c0;
+}
+
+/* Loading and Error States */
+.loading, .no-posts, .error, .no-ads, .no-comments, .loading-ads {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    font-size: 14px;
+}
+
+.loading i {
+    margin-right: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.error {
+    color: #dc3545;
+}
+
+.no-posts, .no-ads, .no-comments {
+    color: #888;
+    font-style: italic;
+}
+
+/* Message Styles from JS */
+.message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+    cursor: pointer;
+}
+
+.message.success {
+    background-color: #28a745;
+}
+
+.message.error {
+    background-color: #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* Responsive design */
@@ -398,8 +688,8 @@ form:hover .fa {
         width: 100%;
     }
     
-    form {
-        width: 300px;
+    #searchForm {
+        width: 250px;
     }
 }
 
@@ -413,8 +703,8 @@ form:hover .fa {
         justify-content: center;
     }
     
-    form {
-        width: 100%;
+    #searchForm {
+        width: 200px;
     }
     
     .container {
@@ -427,7 +717,7 @@ form:hover .fa {
         display: none;
     }
     
-    form {
+    #searchForm {
         width: 80%;
     }
     
@@ -438,36 +728,8 @@ form:hover .fa {
     #logo svg {
         height: 50px;
     }
-}
-/* Style for menu links */
-.menus a {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    width: 100%;
-    height: 100%;
-    padding: 10px 12px;
-}
-
-.menus a:hover {
-    color: #ff77c0;
-}
-
-/* Ensure the list items don't have extra padding */
-.menus li {
-    padding: 0;
-    margin: 0 2px;
-    cursor: pointer;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 14px;
-    transition: color 0.3s ease;
-    display: flex;
-    align-items: center;
-}
-
-.menus li:hover {
-    color: #ff77c0;
+    
+    .container {
+        padding: 10px;
+    }
 }

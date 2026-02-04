@@ -17,6 +17,110 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUserType = null;
     let userData = null;
 
+    // ===== PROFILE PICTURE UPLOAD FUNCTIONALITY =====
+    function setupProfilePictureChange() {
+        const profilePicContainer = document.querySelector('.customer-profile-pic-container');
+        const profilePicInput = document.getElementById('customerProfilePicInput');
+        const profilePic = document.querySelector('.customer-profile-pic');
+        
+        if (!profilePicContainer || !profilePicInput || !profilePic) return;
+        
+        // Store original image URL for fallback
+        let originalImageUrl = profilePic.src;
+        
+        // Open file dialog
+        profilePicContainer.addEventListener('click', function() {
+            profilePicInput.click();
+        });
+        
+        // Handle file selection and UPLOAD
+        profilePicInput.addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file (JPG, PNG, GIF, etc.)');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size should be less than 5MB');
+                return;
+            }
+            
+            // Show preview immediately
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profilePic.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Upload to server
+            try {
+                const formData = new FormData();
+                formData.append('action', 'uploadClientImage');
+                formData.append('image', file);
+                
+                const response = await fetch('sidebar_handler.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccessMessage('Profile picture saved successfully!');
+                    // Update with server URL
+                    if (result.imageUrl) {
+                        profilePic.src = result.imageUrl;
+                        originalImageUrl = result.imageUrl; // Update fallback URL
+                    }
+                } else {
+                    alert('Error: ' + result.message);
+                    // Revert to original image on error
+                    profilePic.src = originalImageUrl;
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Failed to upload image. Please try again.');
+                // Revert to original image on error
+                profilePic.src = originalImageUrl;
+            }
+            
+            // Reset input
+            profilePicInput.value = '';
+        });
+    }
+
+    // Helper function to show success message
+    function showSuccessMessage(message) {
+        // Remove any existing success message
+        const existingMessage = document.querySelector('.profile-pic-success');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+        
+        // Create new success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'profile-pic-success';
+        successDiv.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(successDiv);
+        
+        // Remove message after 3 seconds
+        setTimeout(() => {
+            if (successDiv.parentNode) {
+                successDiv.remove();
+            }
+        }, 3000);
+    }
+
     // Initialize sidebars based on user type from session
     async function initializeSidebars() {
         if (!providerSidebar || !customerSidebar) return;
@@ -39,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     activeSidebar = customerSidebar;
                     loadCustomerInfo();
                     loadFollowedProviders();
+                    setupProfilePictureChange(); // ADDED THIS LINE
                 }
             } else {
                 // If not logged in, default to customer view
@@ -48,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 activeSidebar = customerSidebar;
                 loadCustomerInfo();
                 loadFollowedProviders();
+                setupProfilePictureChange(); // ADDED THIS LINE
             }
             
             updateToggleIcon();
@@ -59,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
             activeSidebar = customerSidebar;
             loadCustomerInfo();
             loadFollowedProviders();
+            setupProfilePictureChange(); // ADDED THIS LINE
         }
     }
 
@@ -302,7 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             ).join('')}
                             <span>${provider.rating}</span>
                         </div>
-                        <button class="btn-profile" onclick="viewProfile('${provider.name}')">View Profile</button>
+                        <button class="btn-profile" onclick="viewProfile('${provider.id}', '${provider.name}')">View Profile</button>
                     `;
                     followedGrid.appendChild(card);
                 });

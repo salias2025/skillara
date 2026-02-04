@@ -21,6 +21,74 @@ $user_type = $_SESSION['user_type'];
 try {
     $mainDB = new MainDB();
     
+    // ===== NEW: HANDLE CLIENT PROFILE PICTURE UPLOAD =====
+    // Get action from POST request
+    $action = $_POST['action'] ?? null;
+    
+    if ($action === 'uploadClientImage') {
+        // Check if user is logged in as client
+        if ($user_type !== 'client') {
+            throw new Exception('Not authorized to upload image');
+        }
+        
+        if (!isset($_FILES['image'])) {
+            throw new Exception('Image file required');
+        }
+        
+        $file = $_FILES['image'];
+        
+        // Validate file
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($file['type'], $allowedTypes)) {
+            throw new Exception('Invalid image format. Allowed: JPG, PNG, GIF, WEBP, AVIF');
+        }
+        
+        if ($file['size'] > $maxSize) {
+            throw new Exception('Image too large. Maximum size: 5MB');
+        }
+        
+        // Get project root path
+        $projectRoot = realpath(dirname(__FILE__) . '/..');
+        
+        // Upload directory
+        $uploadDir = $projectRoot . "/uploads/profile/";
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        // Generate unique filename
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = "client_{$user_id}_" . time() . ".{$fileExt}";
+        $filePath = $uploadDir . $fileName;
+        
+        // Move uploaded file
+        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+            throw new Exception('Failed to upload image');
+        }
+        
+        // Update database
+        $success = $mainDB->updateClientProfilePicture($user_id, $fileName);
+        
+        if ($success) {
+            // Return FULL URL
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'];
+            $imageUrl = $protocol . '://' . $host . "/skillara/uploads/profile/{$fileName}";
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Profile picture updated successfully',
+                'imageUrl' => $imageUrl
+            ]);
+            exit;
+        } else {
+            throw new Exception('Failed to update database');
+        }
+    }
+    // ===== END OF UPLOAD HANDLER =====
+    
     if ($user_type === 'client') {
         // Get client info
         $clientInfo = $mainDB->getClientInfo($user_id);
